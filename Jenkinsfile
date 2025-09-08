@@ -7,16 +7,16 @@ pipeline {
 sh 'wget https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war -O sample.war'
             }
         }
-        stage('Deploy') {
-            steps {
-sshagent(['ec2-ssh-key']) {
-sh '''
-scp -o StrictHostKeyChecking=no sample.war ec2-user@54.226.130.212:/home/ec2-user/tomcat10/webapps/
-scp -o StrictHostKeyChecking=no sample.warubuntu@98.84.113.241:/opt/tomcat/tomcat9/webapps
-                    '''
-                }
-            }
-        }  
+       stage('Deploy') {
+    steps {
+        sshagent (credentials: ['ec2-user']) {
+            sh '''
+                scp -o StrictHostKeyChecking=no sample.war ec2-user@54.226.130.212:/home/ec2-user/tomcat10/webapps/
+                scp -o StrictHostKeyChecking=no sample.war ubuntu@98.84.113.241:/opt/tomcat/tomcat9/webapps/
+            '''
+        }
+    }
+}  
         stage('Test') {
             steps {
                 // Verify Tomcat servers are responding
