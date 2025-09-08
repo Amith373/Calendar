@@ -9,7 +9,7 @@ sh 'wget https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war -O sa
         }
        stage('Deploy') {
     steps {
-        sshagent (credentials: ['ec2-user']) {
+        sshagent(['ec2-ssh-key']) {
             sh '''
                 scp -o StrictHostKeyChecking=no sample.war ec2-user@54.226.130.212:/home/ec2-user/tomcat10/webapps/
                 scp -o StrictHostKeyChecking=no sample.war ubuntu@98.84.113.241:/opt/tomcat/tomcat9/webapps/
