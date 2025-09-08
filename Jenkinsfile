@@ -15,13 +15,13 @@ sh 'wget https://tomcat.apache.org/tomcat-9.0-doc/appdev/sample/sample.war -O sa
                 scp -o StrictHostKeyChecking=no sample.war ubuntu@98.84.113.241:/opt/tomcat/tomcat9/webapps/
             '''
         }
+        steps {
         sshagent(credentials: ['your-pem-credential-id']) {
     sh '''
     scp -o StrictHostKeyChecking=no sample.war ubuntu@98.84.113.241:/tmp/sample.war
     ssh -o StrictHostKeyChecking=no ubuntu@98.84.113.241 "sudo mv /tmp/sample.war /opt/tomcat/tomcat9/webapps/"
     '''
 }
-    }
     }
 }  
         stage('Test') {
