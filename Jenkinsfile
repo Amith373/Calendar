@@ -5,7 +5,7 @@ pipeline {
         APP_NAME = "calendar.war"
         SERVER1 = "ec2-user@<13.217.222.88>"
         SERVER2 = "ec2-user@<18.212.203.158>"
-        TOMCAT_DIR = "/home/ec2-user/tomcat/webapps"
+        TOMCAT_DIR = "/home/ec2-user/tomcat10/webapps"
     }
 
      stage('Build') {
@@ -41,8 +41,6 @@ pipeline {
                     }
                 }
             }
-        }
-    }
 
     post {
         success {
