@@ -1,33 +1,58 @@
 pipeline {
     agent any
 
+    environment {
+        APP_NAME = "calendar.war"
+        SERVER1 = "ec2-user@13.217.222.88"
+        SERVER2 = "ubuntu@18.212.203.158"
+        TOMCAT_DIR = "/home/ec2-user/tomcat10/webapps"
+    }
+
     stages {
         stage('Build') {
             steps {
-sh 'wget https://tomcat.apache.org/tomcat-10.0-doc/appdev/Calendar/Calendar.war -O Calendar.war'
+                echo "Building WAR from source..."
+                sh "mvn clean package -DskipTests"
+                sh "cp target/*.war ${Assignment}"
             }
         }
+
         stage('Deploy') {
             steps {
-sshagent(['ec2-ssh-key']) {
-sh '''
-scp -o StrictHostKeyChecking=no Calendar.war ec2-user@13.217.222.88:/home/ec2-user/tomcat10/webapps/
-scp -o StrictHostKeyChecking=no Calendar.war ubuntu@18.212.203.158:/home/ubuntu/tomcat10/webapps/
-                    '''
+                sshagent(credentials: ['ec2-user']) {
+                    echo "Deploying to Server 1..."
+                    sh "scp -o StrictHostKeyChecking=no ${Assignment} ${SERVER1}:${TOMCAT_DIR}/"
+
+                    echo "Deploying to Server 2..."
+                    sh "scp -o StrictHostKeyChecking=no ${Assignment} ${SERVER2}:${TOMCAT_DIR}/"
                 }
             }
-        }  
+        }
+
         stage('Test') {
             steps {
-                // Verify Tomcat servers are responding
-sh '''
-                    echo "Checking Tomcat server 1..."
-                    curl -f http://13.217.222.88:8080/Calendar/ || exit 1
+                script {
+                    def urls = [
+                        "http://13.217.222.88:8080/calendar/",
+                        "http://18.212.203.158:8080/calendar/"
+                    ]
 
-                    echo "Checking Tomcat server 2..."
-                    curl -f http://18.212.203.158:8080/Calendar/ || exit 1
-                '''
+                    for (u in urls) {
+                        echo "Checking Tomcat server at ${u}..."
+                        sh "sleep 10"  // wait for Tomcat to deploy WAR
+                        sh "curl -f ${u}"
+                    }
+                }
             }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Deployment successful on both servers!"
+        }
+        failure {
+            echo "❌ Deployment failed. Please check logs."
         }
     }
 }
