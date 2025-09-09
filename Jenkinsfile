@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         APP_NAME = "calendar.war"
-        SERVER1 = "ec2-user@<13.217.222.88>"
-        SERVER2 = "ec2-user@<18.212.203.158>"
+        SERVER1 = "ec2-user@13.217.222.88"
+        SERVER2 = "ec2-user@18.212.203.158"
         TOMCAT_DIR = "/home/ec2-user/tomcat10/webapps"
     }
 
@@ -31,8 +31,8 @@ pipeline {
             steps {
                 script {
                     def urls = [
-                        "http://<18.212.203.158P>:8080/calendar/",
-                        "http://<18.212.203.158>:8080/calendar/"
+                        "http://18.212.203.158P:8080/calendar/",
+                        "http://18.212.203.158:8080/calendar/"
                     ]
 
                     for (u in urls) {
