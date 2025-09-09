@@ -1,53 +1,33 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = "calendar.war"
-        SERVER1 = "ec2-user@13.217.222.88"
-        SERVER2 = "ec2-user@18.212.203.158"
-        TOMCAT_DIR = "/home/ec2-user/tomcat10/webapps"
-    }
-
-     stage('Build') {
-       steps {
-             echo "Cloning repository and preparing WAR..."
-            git branch: 'master', url: 'https://github.com/Amith373/Calendar.git'
-         }
-      }
-
+    stages {
+        stage('Build') {
+            steps {
+sh 'wget https://tomcat.apache.org/tomcat-10.0-doc/appdev/sample/sample.war -O sample.war'
+            }
+        }
         stage('Deploy') {
             steps {
-                sshagent(credentials: ['ec2-user']) {
-                    echo "Deploying to Server 1..."
-                    sh "scp -o StrictHostKeyChecking=no Assignment 18.212.203.158:/home/ec2-user/tomcat10/webapps/"
-
-                    echo "Deploying to Server 2..."
-                    sh "scp -o StrictHostKeyChecking=no Assignment 18.212.203.158:/home/ubuntu/tomcat10/webapps/"
+sshagent(['ec2-ssh-key']) {
+sh '''
+scp -o StrictHostKeyChecking=no sample.war ec2-user@13.217.222.88:/home/ec2-user/tomcat10/webapps/
+scp -o StrictHostKeyChecking=no sample.warubuntu@18.212.203.158:/opt/tomcat/tomcat10/webapps
+                    '''
                 }
             }
-        }
-
+        }  
         stage('Test') {
             steps {
-                script {
-                    def urls = [
-                        "http://18.212.203.158P:8080/calendar/",
-                        "http://18.212.203.158:8080/calendar/"
-                    ]
+                // Verify Tomcat servers are responding
+sh '''
+                    echo "Checking Tomcat server 1..."
+                    curl -f http://13.217.222.88:8080/sample/ || exit 1
 
-                    for (u in urls) {
-                        echo "Testing deployment at ${u}"
-                        sh "curl -s --head ${u} | grep '200 OK'"
-                    }
-                }
+                    echo "Checking Tomcat server 2..."
+                    curl -f http://18.212.203.158:8080/sample/ || exit 1
+                '''
             }
-
-    post {
-        success {
-            echo "✅ Deployment successful on both servers!"
-        }
-        failure {
-            echo "❌ Deployment failed. Please check logs."
         }
     }
- }
+}
