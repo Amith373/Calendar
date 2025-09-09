@@ -8,15 +8,12 @@ pipeline {
         TOMCAT_DIR = "/home/ec2-user/tomcat/webapps"
     }
 
-    stages {
-        stage('Build') {
-            steps {
-                echo "Cloning repository and preparing WAR..."
-                git branch: 'main', url: 'https://github.com/Amith373/Calendar.git'
-                // Assuming WAR is built and available inside repo or downloaded
-                sh 'cp sample.war ${APP_NAME}' 
-            }
-        }
+     stage('Build') {
+       steps {
+             echo "Cloning repository and preparing WAR..."
+            git branch: 'master', url: 'https://github.com/Amith373/Calendar.git'
+         }
+      }
 
         stage('Deploy') {
             steps {
