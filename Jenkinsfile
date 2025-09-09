@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo "Building WAR from source..."
                 sh "mvn clean package -DskipTests"
-                sh "cp target/*.war ${Assignment}"
+                sh "cp target/*.war ${APP_NAME}"
             }
         }
 
@@ -21,10 +21,10 @@ pipeline {
             steps {
                 sshagent(credentials: ['ec2-user']) {
                     echo "Deploying to Server 1..."
-                    sh "scp -o StrictHostKeyChecking=no ${Assignment} ${SERVER1}:${TOMCAT_DIR}/"
+                    sh "scp -o StrictHostKeyChecking=no ${APP_NAME} ${SERVER1}:${TOMCAT_DIR}/"
 
                     echo "Deploying to Server 2..."
-                    sh "scp -o StrictHostKeyChecking=no ${Assignment} ${SERVER2}:${TOMCAT_DIR}/"
+                    sh "scp -o StrictHostKeyChecking=no ${APP_NAME} ${SERVER2}:${TOMCAT_DIR}/"
                 }
             }
         }
@@ -56,3 +56,4 @@ pipeline {
         }
     }
 }
+
