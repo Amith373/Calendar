@@ -13,7 +13,7 @@ pipeline{
 				agent { label 'node2' }
 					steps{
 						sh ''' ssh ec2-user@172.31.20.104 "
-							scp ec2-user@54.88.24.75:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
+							scp ec2-user@54.196.54.127:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
 							sudo cp Calendar.war /home/ec2-user/tomcat10/webapps/
 							sudo systemctl restart tomcat "
 					'''
@@ -24,7 +24,7 @@ pipeline{
 				agent { label 'node2' }
 					steps{
 						sh ''' ssh ec2-user@172.31.27.245 "
-							scp ec2-user@54.88.24.75:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
+							scp ec2-user@54.196.54.127:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
 							sudo cp  Calendar.war /home/ubuntu/tomcat10/webapps
 							sudo systemctl restart tomcat  "
 					'''
