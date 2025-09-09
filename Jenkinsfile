@@ -4,7 +4,7 @@ pipeline{
 		stage('Build'){
 		agent { label 'node2' }
 			steps{
-				git branch : 'master', url : 'https://github.com/Agasthyahm/calendar.git'
+				git branch : 'master', url : 'https://github.com/Amith373/Calendar.git'
 			}
 		}
 		stage('Deploy into both server'){
@@ -12,9 +12,9 @@ pipeline{
 				stage('deploy to server1'){
 				agent { label 'node2' }
 					steps{
-						sh ''' ssh ec2-user@172.31.41.188 "
-							scp ec2-user@172.31.47.51:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
-							sudo cp Calendar.war /opt/tomcat/webapps/
+						sh ''' ssh ec2-user@172.31.20.104 "
+							scp ec2-user@54.88.24.75:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
+							sudo cp Calendar.war /home/ec2-user/tomcat10/webapps/
 							sudo systemctl restart tomcat "
 					'''
 						
@@ -23,9 +23,9 @@ pipeline{
 				stage('deploy to server2'){
 				agent { label 'node2' }
 					steps{
-						sh ''' ssh ec2-user@172.31.36.199 "
-							scp ec2-user@172.31.47.51:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
-							sudo cp  Calendar.war /opt/tomcat/webapps/
+						sh ''' ssh ec2-user@172.31.27.245 "
+							scp ec2-user@54.88.24.75:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
+							sudo cp  Calendar.war /home/ubuntu/tomcat10/webapps
 							sudo systemctl restart tomcat  "
 					'''
 					}
@@ -37,10 +37,10 @@ pipeline{
 			steps{
 				sh ''' 
 						echo -e "Testing for server1 \n"
-						curl -Is http://51.20.4.202:8080/Calendar/Calendar.html
+						curl -Is http://13.217.222.88:8080/Calendar/Calendar.html
 
 						echo -e "\n Testing for server2"
-						curl -Is http://16.170.206.50:8080/Calendar/Calendar.html
+						curl -Is http://18.212.203.158:8080/Calendar/Calendar.html
  '''
 			}
 		}
