@@ -22,10 +22,10 @@ pipeline {
             steps {
                 sshagent(credentials: ['ec2-user']) {
                     echo "Deploying to Server 1..."
-                    sh "scp -o StrictHostKeyChecking=no ${Assignment} ${18.212.203.158}:${/home/ec2-user/tomcat10/webapps}/"
+                    sh "scp -o StrictHostKeyChecking=no Assignment 18.212.203.158:/home/ec2-user/tomcat10/webapps/"
 
                     echo "Deploying to Server 2..."
-                    sh "scp -o StrictHostKeyChecking=no ${Assignment} ${18.212.203.158}:${/home/ubuntu/tomcat10/webapps}/"
+                    sh "scp -o StrictHostKeyChecking=no Assignment 18.212.203.158:/home/ubuntu/tomcat10/webapps/"
                 }
             }
         }
