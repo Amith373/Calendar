@@ -2,7 +2,8 @@ pipeline{
 	agent any
 	stages{
 		stage('Build'){
-	
+	    agent { label 'node2' }
+
 			steps{
 				git branch : 'master', url : 'https://github.com/Amith373/Calendar.git'
 			}
@@ -10,8 +11,12 @@ pipeline{
 		stage('Deploy into both server'){
 			parallel{
 				stage('deploy to server1'){
-				
+				agent { label 'node2' }
+
 					steps{
+						sshagent(['ec2-ssh']) {
+    // some block
+}
 						sh ''' ssh ec2-user@172.31.20.104 "
 							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
 							sudo cp Calendar.war /opt/tomcat/webapps/
@@ -21,8 +26,12 @@ pipeline{
 					}
 				}
 				stage('deploy to server2'){
-		
+	           	agent { label 'node2' }
+
 					steps{
+						sshagent(['ec2-ssh']) {
+    // some block
+}
 						sh ''' ssh ubuntu@172.31.27.245 "
 							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
 							sudo cp  Calendar.war /opt/tomcat/webapps/
@@ -33,8 +42,8 @@ pipeline{
 			}
 		}
 		stage('Test'){
-
-			steps{
+          agent { label 'node2' }
+		steps{
 				sh ''' 
 						echo -e "Testing for server1 \n"
 						curl -Is http://18.234.215.210:8080/Calendar/Calendar.html
