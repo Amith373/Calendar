@@ -1,8 +1,7 @@
 pipeline{
-	agent none
+	agent any
 	stages{
 		stage('Build'){
-		agent { label 'master' }
 			steps{
 				git branch : 'master', url : 'https://github.com/Agasthyahm/calendar.git'
 			}
@@ -10,7 +9,6 @@ pipeline{
 		stage('Deploy into both server'){
 			parallel{
 				stage('deploy to server1'){
-				agent { label 'master' }
 					steps{
 						sh ''' ssh ec2-user@172.31.41.188 "
 							scp ec2-user@54.172.218.118:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
@@ -21,7 +19,7 @@ pipeline{
 					}
 				}
 				stage('deploy to server2'){
-				agent { label 'master' }
+			
 					steps{
 						sh ''' ssh ec2-user@172.31.36.199 "
 							scp ec2-user@54.172.218.118:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
@@ -33,7 +31,7 @@ pipeline{
 			}
 		}
 		stage('Test'){
-		agent { label 'master' }
+	
 			steps{
 				sh ''' 
 						echo -e "Testing for server1 \n"
