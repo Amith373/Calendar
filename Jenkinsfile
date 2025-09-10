@@ -1,8 +1,8 @@
 pipeline{
-	agent none
+	agent any
 	stages{
 		stage('Build'){
-		agent { label 'Built-In Node' }
+	
 			steps{
 				git branch : 'master', url : 'https://github.com/Amith373/Calendar.git'
 			}
@@ -10,7 +10,7 @@ pipeline{
 		stage('Deploy into both server'){
 			parallel{
 				stage('deploy to server1'){
-				agent { label 'Built-In Node' }
+				
 					steps{
 						sh ''' ssh ec2-user@172.31.20.104 "
 							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
@@ -21,7 +21,7 @@ pipeline{
 					}
 				}
 				stage('deploy to server2'){
-				agent { label 'Built-In Node' }
+		
 					steps{
 						sh ''' ssh ubuntu@172.31.27.245 "
 							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
@@ -33,7 +33,7 @@ pipeline{
 			}
 		}
 		stage('Test'){
-		agent { label 'Built-In Node' }
+
 			steps{
 				sh ''' 
 						echo -e "Testing for server1 \n"
