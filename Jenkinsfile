@@ -3,7 +3,7 @@ pipeline{
 	stages{
 		stage('Build'){
 			steps{
-				git branch : 'master', url : 'https://github.com/Agasthyahm/calendar.git'
+				git branch : 'master', url : 'https://github.com/Amith373/Calendar.git'
 			}
 		}
 		stage('Deploy into both server'){
@@ -11,7 +11,7 @@ pipeline{
 				stage('deploy to server1'){
 					steps{
 						sh ''' ssh ec2-user@172.31.20.104 "
-							scp ec2-user@54.172.218.118:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
+							scp ubuntu@54.172.218.118:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
 							sudo cp Calendar.war /opt/tomcat/webapps/
 							sudo systemctl restart tomcat "
 					'''
@@ -21,8 +21,8 @@ pipeline{
 				stage('deploy to server2'){
 			
 					steps{
-						sh ''' ssh ec2-user@172.31.27.245 "
-							scp ec2-user@54.172.218.118:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
+						sh ''' ssh ubuntu@172.31.27.245 "
+							scp ubuntu@54.172.218.118:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
 							sudo cp  Calendar.war /opt/tomcat/webapps/
 							sudo systemctl restart tomcat  "
 					'''
