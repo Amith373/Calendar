@@ -1,70 +1,48 @@
-pipeline {
-    agent { label 'suprith2' }
+pipeline{
+	agent none
+	stages{
+		stage('Build'){
+		agent { label 'node2' }
+			steps{
+				git branch : 'master', url : 'https://github.com/Agasthyahm/calendar.git'
+			}
+		}
+		stage('Deploy into both server'){
+			parallel{
+				stage('deploy to server1'){
+				agent { label 'node2' }
+					steps{
+						sh ''' ssh ec2-user@172.31.20.104 "
+							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
+							sudo cp Calendar.war /opt/tomcat/webapps/
+							sudo systemctl restart tomcat "
+					'''
+						
+					}
+				}
+				stage('deploy to server2'){
+				agent { label 'node2' }
+					steps{
+						sh ''' ssh ubuntu@172.31.27.245 "
+							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
+							sudo cp  Calendar.war /opt/tomcat/webapps/
+							sudo systemctl restart tomcat  "
+					'''
+					}
+				}
+			}
+		}
+		stage('Test'){
+		agent { label 'node2' }
+			steps{
+				sh ''' 
+						echo -e "Testing for server1 \n"
+						curl -Is http://18.234.215.210:8080/Calendar/Calendar.html
 
-    environment {
-        SERVER_IP_1 = "18.234.215.210"
-        SERVER_IP_2 = "18.212.248.90"
-        USER_NAME   = "ubuntu"
-        TMP_DIR     = "/tmp/App/"
-        TOMCAT_DIR  = "/opt/tomcat/webapps/"
-        REPO_DIR    = "${WORKSPACE}/calendar_Assigbnment"
-        WAR_FILE    = "${REPO_DIR}/*.war"
-    }
-
-    stages {
-        stage('Build') {
-    steps {
-        echo "Cloning repository..."
-        sh """
-            if [ -d "${REPO_DIR}" ]; then
-                cd ${REPO_DIR} && git pull
-            else
-                git clone -b master https://github.com/Amith373/Calendar.git
-            fi
-        """
-    }
-}
-
-
-        stage('Deploy to Tomcat1') {
-            steps {
-                echo "Deploying WAR to Tomcat1..."
-                sh """
-            
-                    ssh ${USER_NAME}@${SERVER_IP_1} "mkdir -p ${TMP_DIR}"
-                    scp $WAR_FILE ${USER_NAME}@${SERVER_IP_1}:${TMP_DIR}
-                    ssh ${USER_NAME}@${SERVER_IP_1} "sudo mv ${TMP_DIR}/*.war ${TOMCAT_DIR}"
-                """
-            }
-        }
-    stage('Deploy to Tomcat2') {
-            steps {
-                echo "Deploying WAR to Tomcat2..."
-                sh """
-                
-        
-                    ssh ${USER_NAME}@${SERVER_IP_2} "mkdir -p ${TMP_DIR}"
-                    scp $WAR_FILE ${USER_NAME}@${SERVER_IP_2}:${TMP_DIR}
-                    ssh ${USER_NAME}@${SERVER_IP_2} "sudo mv ${TMP_DIR}/*.war ${TOMCAT_DIR}"
-                """
-            }
-        }
-
-
-        stage('Test') {
-    steps {
-        echo "Waiting for Tomcat to start the applications..."
-        // sleep for 20 seconds
-        sleep(time: 20, unit: 'SECONDS')
-
-        echo "Verifying Calendar application on Tomcat1..."
-        sh 'curl -f -I http://${SERVER_IP_1}:8080/Calendar/ || exit 1'
-
-     echo "Verifying Calendar application on Tomcat2..."
-            echo "Verifying Calendar application on Tomcat2..."
-        sh 'curl -f -I http://${SERVER_IP_2}:8080/Calendar/ || exit 1'
-
-            }
-        }
-    }
+						echo -e "\n Testing for server2"
+						curl -Is http://18.212.248.90:8080/Calendar/Calendar.html
+ '''
+			}
+		}
+	}
 }
