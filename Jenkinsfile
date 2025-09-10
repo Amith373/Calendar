@@ -14,9 +14,7 @@ pipeline{
 				agent { label 'node2' }
 
 					steps{
-						sshagent(['ec2-ssh']) {
-    // some block
-}
+
 						sh ''' ssh ec2-user@172.31.20.104 "
 							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war . 
 							sudo cp Calendar.war /opt/tomcat/webapps/
@@ -29,9 +27,7 @@ pipeline{
 	           	agent { label 'node2' }
 
 					steps{
-						sshagent(['ec2-ssh']) {
-    // some block
-}
+
 						sh ''' ssh ubuntu@172.31.27.245 "
 							scp ubuntu@54.81.207.39:/home/ec2-user/jenkins/workspace/tomcat-deployment/Calendar.war .
 							sudo cp  Calendar.war /opt/tomcat/webapps/
