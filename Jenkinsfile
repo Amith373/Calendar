@@ -2,8 +2,8 @@ pipeline {
     agent { label 'suprith2' }
 
     environment {
-        SERVER_IP_1 = "172.31.39.195"
-        SERVER_IP_2 = "172.31.44.137"
+        SERVER_IP_1 = "18.234.215.210"
+        SERVER_IP_2 = "18.212.248.90"
         USER_NAME   = "ubuntu"
         TMP_DIR     = "/tmp/App/"
         TOMCAT_DIR  = "/opt/tomcat/webapps/"
@@ -19,7 +19,7 @@ pipeline {
             if [ -d "${REPO_DIR}" ]; then
                 cd ${REPO_DIR} && git pull
             else
-                git clone -b master https://github.com/mbgowtham53-star/calendar_Assigbnment.git
+                git clone -b master https://github.com/Amith373/Calendar.git
             fi
         """
     }
